@@ -1,0 +1,166 @@
+
+LOBOS ST JUDE MOD 2021
+
+GENERAL SETUP:
+	- The mod is designed such that it is identical to vanilla DS1 if no modifiers are ever activated.
+	- Additional invisible enemies are randomly placed around the map, using Roguelike coordiantes.
+	- One of the modifier categories is "LUCKY DIP", which can activate any of the other modifiers.
+		- There are a few unique effects (like "PATCHES AMBUSH") that can only be activated using this mode.
+		
+
+PROGRAMMING SETUP:
+	- No fancy installer with commands.
+	- When you run the program, it simply installs all static files (EMEVD, GameParam), then runs the companion program to monitor incoming donations/requests and act on the game in response (generally just enabling/disabling event flags, but sometimes generating all-new MSBs).
+	
+	- Capabilities I need:
+		- Map generator. This is basically identical to the RS setup, minus a few things like Abyss portals.
+			- In addition to the standard random enemies, there are a ton of random enemies that are disabled, at high density. These are used for enemy ambushes. When requested, the manager looks at the player's position, finds the closest position occupied by an invisible enemy, and enables it.
+			- Actually, this seems overly complicated. Just have a host of disabled enemies sitting around somewhere and warp a random one to the player's location (model point behind them) as needed. Maybe I can even warp them to arbitrary nodes close to the player, if I can get access to their XYZ in GameHook.
+			- RS boss randomization is used as well. Ensure that bosses repeat as little as possible across the game.
+		- Each map has Patches (6980-6999). He is enabled and warped to the player (model point behind them) when requested.
+			- Put some of his dialogue in common sounds for fun, and trigger with EMEVD.
+		
+		- Basically everything can be done with EMEVD triggers (flags). The flags can also just be the events themselves; the first line disables their own flag, then the second waits for it to be enabled, and the last (post-effect) restarts (or it can wait for the flag to be disabled to undo the effect, then restart).
+		- C# is only needed to enable these flag triggers in response to donations and edit the MSB files in response to other donations.
+		- Should bosses even be randomized? Probably not much point, if you're going to fight them all eventually anyway.
+		- Although, I can use my twin boss system as well. And the code is all there already. Plus, re-randomizing bosses can be one of the donation triggers.
+		
+		- Have text dialog messages for debugging triggers. Triggers can randomly occur, or I can maybe type numbers into the console manager to get them to occur, and dialog boxes can confirm the request is received. Then I observe the outcome.
+		
+		- Give merchants a ton of random items, and have donation modifiers randomly set which flags are available for purchase.
+		- Donation modifier: randomize merchant location across the entire world? Seems harsh.
+			- Or, donation modifier to have Andre spawn right next to you. (If so, put his dialogue in common.)
+		
+
+- I think, to get this done, I have to scale it back. I'm not sure I can handle the amount needed for full randomization and stuff. Stop getting too ambitious.
+- Keep the game vanilla, and just focus on the modifiers. Only basic randomization (change models, NPCParam, and AIParam) when requested. Have a dozen or so random enemies per map. Warp them to the player when Ambush is triggered (model point). No randomized items. No extra twin bosses or anything.
+
+- SO, just have a base vanilla MSB. Iterate over it and randomize every non-c0000 character when requested.
+
+- Actually, maybe don't even bother with ANY randomization. Make MSBs static. Just add a bunch of enemies of appropriate types for that map and randomly select one of their entity IDs for ambush. No "Whole New World" modifier.
+	- ... but randomizing enemy models/params IS pretty simple...
+- Could randomize their positions as well, by checking them out from the list. But not actually CREATE or DELETE any MSB entries. Just modify the existing ones.
+- Would just need to pre-identify "boss" entity IDs and "exempt" entity IDs (Crystal Lizards, enemies with key drops, etc.).
+- OR: ONLY randomize position, and don't randomize enemy type. So it feels sort of vanilla, but sort of not. (Position could also be randomized only within a certain radius from vanilla position.)
+
+- SO, workflow:
+
+	- GameParam:
+		- All red phantom params have 999 smell.
+		- Add special Channeler entry (ghost, tons of health and poise).
+	
+	- AI:
+		- Put 537000 (Gwyn) battle script in common.
+		- Put Mosquito battle script in common.
+		- Put Patches battle script in common.
+		- Don't need Channeler AI.
+		
+	- FFX:
+		- Put Gwyn, Channeler, and Mosquito effects in common.
+		
+	- SOUND:
+		- Put a couple of lines of Patches dialogue in common. Play manually.
+		
+	- MSB (Base):
+		- Give each map piece an entity ID (except skyboxes).
+		- Add Patches to every map (with entity ID in 7980-7997 range).
+		- Add a Channeler to every map (with entity ID in 7960-7967 range).
+		- Add a Mosquito spawner event to every map (with however many Mosquito characters are needed).
+			- One region per spawner is still fine, I think.
+
+	WHOLE NEW WORLD:
+		- Open base MSB.
+		- Iterate over characters.
+			- If character is exempt, do nothing.
+			- If character is boss, do nothing.
+			- Otherwise:
+				- Check out random position within a certain distance from current position.
+				- Don't bother changing rotation.
+	
+	INVISIBLE WORLD:
+		- Disable all map pieces (by entity ID) except skyboxes.
+		- Never re-enable; they will re-enable on reload automatically.
+	
+	AMBUSH:
+		- Choose random red phantom. (If dead, choose again?)
+		- Warp to player (model point).
+		- Fade in.
+	
+	ALARM RAISED:
+		- Enable all red phantoms and warp to player (different model points).
+		- Fade in.
+		- Disable (fade out) after 10 seconds.
+		
+	SUDDEN CHANNELER:
+		- Enable special Channeler.
+		- Disable gravity and collision.
+		- Move to ABOVE player position (model point above) if possible.
+		- Force-animate buff dance.
+		- Fade out and disable after animation is done.
+		
+	GO DIRECTLY TO JAIL:
+		* Edit m12_01 EMEVD so that Manus also listens for a different optional flag to start the battle.
+		- Warp to Manus.
+		- Bonfire does not appear on victory (checks for request flag), but otherwise Manus stays dead.
+		- Award a Homeward Bone upon victory to return to last bonfire.
+		- Maybe add a manager option to return to Firelink in case something goes wrong (e.g. if Lobos quits during Manus).
+		
+	SOMETHING'S WRONG:
+		- Open base MSB.
+		- Iterate over characters.
+			- If character is exempt, do nothing.
+			- If character is boss, do nothing.
+			- Otherwise:
+				- Check out random position within a certain distance from current position.
+				- Don't bother changing rotation.
+				- Replace model with c5370, NPC param with 537000, and AI param with 537000.
+	
+MODIFIERS:
+	- Player special effects (until reload):
+		- Speed up.
+		- Speed down.
+		- Health bleed.
+		- Health regain.
+		- Super stamina regen.
+		- Slow stamina regen.
+		- Stealth mode (hard to see/hear).
+	
+	- Enemy special effects (until reload):
+		- Speed up.
+		- Speed down.
+		- Health regain.
+		- Power up.
+		- One-shot kill (extreme power up).
+	
+	- LEVEL UP/DOWN: Add or subtract player stats permanently.
+	
+	- Take all of player's weapons away and give them a random weapon.
+		- Should be able to use DSHook to force-equip it.
+		- Maybe only take away the weapon currently equipped.
+	
+	- Take all of player's armor away and give them a random armor set.
+		- Should be able to use DSHook to force-equip it.
+		- Maybe only take away the armor currently being worn.
+	
+	- AMBUSH: Nearest invisible enemy is enabled.
+		- Enemies that appear this way should have infinite smell.
+	
+	- WHOLE NEW WORLD: All enemies in map are re-rolled on next map load, excluding bosses.
+
+	- ALARM RAISED: all invisible enemies activate at once for 30 seconds, then deactivate.
+		- Use a giant music box to play MGS "alarm raised" music everywhere? Probably easier as a 30 second sound effect.
+	
+	- THE REAL TREASURE: Patches appears next to the player, hostile.
+	
+	- THERE IS NO SPOON: All map pieces (visuals) are disabled (until reload).
+	
+	- GO DIRECTLY TO JAIL: Warp straight to the Manus boss fight.
+	
+	- SOMETHING'S WRONG...: All normal and invisible enemies become Gwyn on next reload.
+		- Invisible enemies are swapped properly, but normal enemies just use a simple model switch.
+	
+	- ENEMY OF THE PEOPLE: All NPCs become permanently hostile.
+	
+	- INFESTATION: Mosquito spawners activate everywhere.
+	
+	- BONE ZONE: Baby Skeleton spawners activate everywhere.

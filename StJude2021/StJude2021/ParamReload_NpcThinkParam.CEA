@@ -1,0 +1,74 @@
+[ENABLE]
+//code from here to '[DISABLE]' will be used to enable the cheat
+
+globalalloc(thread,4048)
+label(zeros)
+label(NpcThinkParam)
+createThread(thread)
+
+thread:
+mov    rcx,141d1b098
+mov    rcx,QWORD PTR [rcx]
+add    rcx,8
+mov    rdx,NpcThinkParam
+
+mov    r14,140516410
+sub    rsp,28
+call   r14
+add    rsp,28
+
+mov    rcx,141d1b098
+mov    rcx,QWORD PTR [rcx]
+add    rcx,8
+mov    rdx,rax
+
+mov    r14,140516600
+sub    rsp,28
+call   r14
+add    rsp,28
+
+mov    rcx,141d1b360
+mov    rcx,QWORD PTR [rcx]
+add    rcx,298  // for NpcThinkParam
+mov    DWORD PTR [rcx],0
+
+mov    rcx,141d1e4f8
+mov    rcx,QWORD PTR [rcx]
+add    rcx,8
+mov    rdx,1412f37f0
+
+mov    r14,140516410
+sub    rsp,28
+call   r14
+add    rsp,28
+
+mov    rcx,141d1e4f8
+mov    rcx,QWORD PTR [rcx]
+add    rcx,8
+mov    rdx,rax
+
+mov    r14,140516600
+sub    rsp,28
+call   r14
+add    rsp,28
+
+mov    rcx,1412f37f0
+mov    rdx,zeros
+mov    r8,0
+mov    r9,0
+
+mov    r14,14059dfa0
+sub    rsp,28
+call   r14
+add    rsp,28
+ret
+zeros:
+dq 0
+dq 0
+dq 0
+NpcThinkParam:
+db 4e 0 70 0 63 0 54 0 68 0 69 0 6e 0 6b 0 50 0 61 0 72 0 61 0 6d 0 0 0
+
+ 
+[DISABLE]
+//code from here till the end of the code will be used to disable the cheat

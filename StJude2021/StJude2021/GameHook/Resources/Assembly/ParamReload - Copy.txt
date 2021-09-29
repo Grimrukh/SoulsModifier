@@ -1,0 +1,48 @@
+﻿0:  48 b9 98 b0 d1 41 01 00 00 00    movabs rcx,0x141d1b098
+a:  48 8b 09                         mov    rcx,QWORD PTR [rcx]
+d:  48 83 c1 08                      add    rcx,0x8
+11: 48 ba 00 00 00 00 00 00 00 00    mov    rdx,QWORD PTR [$0x118]
+19: 49 be 10 64 51 40 01 00 00 00    movabs r14,0x140516410
+23: 48 83 ec 28				         sub    rsp,0x28
+27: 41 ff d6                         call   r14
+2a: 48 83 c4 28                      add    rsp,0x28
+2e: 48 b9 98 b0 d1 41 01 00 00 00    movabs rcx,0x141d1b098
+38: 48 8b 09                         mov    rcx,QWORD PTR [rcx]
+3b: 48 83 c1 08                      add    rcx,0x8
+3f: 48 89 d0                         mov    rdx,rax
+42: 49 be 00 66 51 40 01 00 00 00    movabs r14,0x140516600
+4c: 48 83 ec 28                      sub    rsp,0x28
+50: 41 ff d6                         call   r14
+53: 48 83 c4 28                      add    rsp,0x28
+57: 48 b9 60 b3 d1 41 01 00 00 00    movabs rcx,0x141d1b360
+61: 48 8b 09                         mov    rcx,QWORD PTR [rcx]
+64: 48 81 c1 00 00 00 00             add    rcx,[paramEnumSignature]
+6b: c7 01 00 00 00 00                mov    DWORD PTR [rcx],0x0
+71: 48 b9 f8 e4 d1 41 01 00 00 00    movabs rcx,0x141d1e4f8
+7b: 48 8b 09                         mov    rcx,QWORD PTR [rcx]
+7e: 48 83 c1 08                      add    rcx,0x8
+82: 48 ba f0 37 2f 41 01 00 00 00    movabs rdx,0x1412f37f0
+8c: 49 be 10 64 51 40 01 00 00 00    movabs r14,0x140516410
+96: 48 83 ec 28                      sub    rsp,0x28
+9a: 41 ff d6                         call   r14
+9d: 48 83 c4 28                      add    rsp,0x28
+a1: 48 b9 f8 e4 d1 41 01 00 00 00    movabs rcx,0x141d1e4f8
+ab: 48 8b 09                         mov    rcx,QWORD PTR [rcx]
+ae: 48 83 c1 08                      add    rcx,0x8
+b2: 48 89 d0                         mov    rdx,rax
+b5: 49 be 00 66 51 40 01 00 00 00    movabs r14,0x140516600
+bf: 48 83 ec 28                      sub    rsp,0x28
+c3: 41 ff d6                         call   r14
+c6: 48 83 c4 28                      add    rsp,0x28
+ca: 48 b9 f0 37 2f 41 01 00 00 00    movabs rcx,0x1412f37f0
+d4: 48 be 00 00 00 00 00 00 00 00    mov    rdx,QWORD PTR [$0x100]
+dc: 49 b8 00 00 00 00 00 00 00 00    mov    r8,0x0
+e3: 49 b9 00 00 00 00 00 00 00 00    mov    r9,0x0
+ea: 49 be a0 df 59 40 01 00 00 00    movabs r14,0x14059dfa0
+f4: 48 83 ec 28                      sub    rsp,0x28
+f8: 41 ff d6                         call   r14
+fb: 48 83 c4 28                      add    rsp,0x28
+ff: c3                               ret
+100: 00 00 00 00 00 00 00 00
+108: 00 00 00 00 00 00 00 00
+110: 00 00 00 00 00 00 00 00

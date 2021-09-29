@@ -1,0 +1,82 @@
+[ENABLE]
+
+globalalloc(thread,4048)
+label(field28)
+label(MagicParam)
+createThread(thread)
+
+//This is a PoC specifically for the Magic param only, but works with all of them
+
+thread:
+//Find_ResCap Magic
+mov rcx, 141d1b098
+mov rcx, qword ptr [rcx]
+add rcx, 8
+mov rdx, MagicParam
+
+mov r14, 00000140516410
+sub rsp,28
+call r14
+add rsp,28
+
+//Unload_ResCap Magic
+mov rcx, 141d1b098
+mov rcx, qword ptr [rcx]
+add rcx, 8
+mov rdx, rax
+
+mov r14, 00000140516600
+sub rsp,28
+call r14
+add rsp,28
+
+//reset SoloParamMan resCount for the loose params we unload
+//reset SoloParamMan-&gt;SoloParams[Magic].containingRes_count
+mov rcx, 141d1b360
+mov rcx, qword ptr [rcx]
+add rcx, 400 //(Magic+Magic*8)*8 + 0x10
+mov dword ptr [rcx], 0
+
+//Find_ResCap gameparam
+mov rcx, 141d1e4f8
+mov rcx, qword ptr [rcx]
+add rcx, 8
+mov rdx, 1412F37F0
+
+mov r14, 00000140516410
+sub rsp,28
+call r14
+add rsp,28
+
+//Unload_ResCap gameparam
+mov rcx, 141d1e4f8
+mov rcx, qword ptr [rcx]
+add rcx, 8
+mov rdx, rax
+
+mov r14, 00000140516600
+sub rsp,28
+call r14
+add rsp,28
+
+//ParambndFileCap_Load gameparam
+mov rcx, 1412F37F0
+mov rdx, field28
+mov r8, 0
+mov r9, 0
+
+mov r14, 0000014059dfa0
+sub rsp,28
+call r14
+add rsp,28
+ret
+
+field28:
+dq 0
+dq 0
+dq 0
+
+MagicParam:
+db 4d 0 61 0 67 0 69 0 63 0 0 0
+
+[DISABLE]
